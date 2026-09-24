@@ -73,7 +73,6 @@ input[type=text]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3p
 .summary{margin:16px 0 0;font-size:13px;color:var(--mute);text-align:center}
 .summary b{font-family:var(--num);font-size:17px;color:var(--navy);margin:0 3px}
 .go{width:100%;margin-top:12px;background:var(--blue);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:17px;letter-spacing:.06em;padding:16px}
-.go:hover{background:var(--blue-d)}
 .go:disabled{background:#BCC8DB;cursor:not-allowed}
 
 .bar{height:4px;background:var(--line);border-radius:99px;overflow:hidden}
@@ -91,17 +90,13 @@ input[type=text]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3p
 .card .tag{position:absolute;top:11px;left:14px;font-size:11px;font-weight:700;color:var(--blue);background:var(--pale);border-radius:4px;padding:1px 7px}
 .card .nm{font-weight:700;color:var(--navy);line-height:1.2}
 .card .mem{font-size:12px;color:var(--mute);min-height:1.4em}
-.card:hover{border-color:var(--blue)}
 .card:active{transform:scale(.99)}
 .card:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
 .skip{align-self:center;background:none;border:none;color:#93A4BE;font-size:12px;text-decoration:underline;text-underline-offset:3px;padding:4px 8px}
-.skip:hover{color:var(--blue)}
 .vs{text-align:center;font-family:var(--num);font-size:15px;color:var(--mute);letter-spacing:.14em;padding:4px 0}
 .tie{display:block;margin:18px auto 0;background:var(--white);border:1.5px solid var(--line);border-radius:999px;padding:11px 26px;font-size:14px;color:var(--ink);font-weight:500}
-.tie:hover{border-color:var(--sky);color:var(--blue)}
 .subacts{display:flex;justify-content:center;gap:22px;margin-top:14px;font-size:13px}
 .subacts button{background:none;border:none;color:#93A4BE;text-decoration:underline;text-underline-offset:3px;padding:6px}
-.subacts button:hover{color:var(--blue)}
 .keyhint{text-align:center;font-size:11px;color:#94A3BA;margin-top:18px}
 @media(max-width:639px){.keyhint{display:none}}
 @media(min-width:640px){
@@ -155,7 +150,7 @@ input[type=text]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3p
 .acts button{background:var(--white);border:1.5px solid var(--line);border-radius:8px;padding:14px;font-size:14px;font-weight:500;color:var(--ink)}
 .acts button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
 .acts button.ghost{border-color:var(--blue);color:var(--blue)}
-.xnote{margin:12px 0 0;font-size:12px;color:var(--mute);text-align:center}
+.xnote{margin:12px 0 0;font-size:12px;color:var(--mute);text-align:center;line-height:1.7}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));
   background:var(--navy);color:#fff;padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:500;
@@ -169,6 +164,14 @@ input[type=text]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3p
 .mbtns button.yes{background:var(--blue);border-color:var(--blue);color:#fff}
 footer{color:#8494AC;font-size:11.5px;line-height:1.75;margin-top:28px}
 footer a{color:var(--blue)}
+/* タップ後にホバー状態が残らないよう、マウス環境だけに適用 */
+@media(hover:hover) and (pointer:fine){
+  .go:hover{background:var(--blue-d)}
+  .card:hover{border-color:var(--blue)}
+  .skip:hover{color:var(--blue)}
+  .tie:hover{border-color:var(--sky);color:var(--blue)}
+  .subacts button:hover{color:var(--blue)}
+}
 .hidden{display:none!important}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -243,7 +246,7 @@ footer a{color:var(--blue)}
     <div class="panel">
       <h2>タイトル</h2>
       <input id="title2" type="text" maxlength="30">
-      <p class="fld">画面と画像に載せる組数</p>
+      <p class="fld">順位表に載せる組数</p>
       <div class="segs" id="depth"></div>
     </div>
 
@@ -517,11 +520,12 @@ function render(){
     return;
   }
 }
-$("#cardA").onclick=()=>answer("a");
-$("#cardB").onclick=()=>answer("b");
-$("#tieBtn").onclick=()=>answer("t");
-$("#skipA").onclick=()=>hideAct("a");
-$("#skipB").onclick=()=>hideAct("b");
+const drop=e=>{if(e&&e.currentTarget&&e.currentTarget.blur)e.currentTarget.blur()};
+$("#cardA").onclick=e=>{drop(e);answer("a")};
+$("#cardB").onclick=e=>{drop(e);answer("b")};
+$("#tieBtn").onclick=e=>{drop(e);answer("t")};
+$("#skipA").onclick=e=>{drop(e);hideAct("a")};
+$("#skipB").onclick=e=>{drop(e);hideAct("b")};
 $("#undo").onclick=()=>{const h=history.pop();if(h){S=h.s;done=h.done;manual=h.manual;hiddenSet=new Set(h.hid);render()}};
 $("#quit").onclick=async()=>{
   if(await ask("ここまでの選択は消えます。最初からやり直しますか？","やり直す")){
@@ -563,7 +567,7 @@ async function showResult(res){
   const n=rankRows().length;
   if(n<1){
     $("#battle").classList.add("hidden");$("#setup").classList.remove("hidden");
-    toast("全部「分からない」にしたので順位表がつくれませんでした");return;
+    toast("全て「分からない」を選択したので作成できませんでした");return;
   }
   $("#battle").classList.add("hidden");$("#result").classList.remove("hidden");
   const opts=[["5","上位5組"],["10","上位10組"],["all","全"+n+"組"]].filter(o=>o[0]==="all"||Number(o[0])<n);
@@ -694,14 +698,33 @@ let downloads=null;
   for(let i=0;i<20;i++){if(window.claude&&window.claude.use)break;await new Promise(r=>setTimeout(r,300))}
   try{if(window.claude&&window.claude.use)downloads=await window.claude.use("downloads")}catch(e){}
 })();
-async function savePng(silent){
-  await lastDraw;
-  if(!lastBlob)await drawImage();
-  const name=($("#title2").value.trim()||"ranking").replace(/[\\/:*?"<>|]/g,"_");
+function fileName(){return ($("#title2").value.trim()||"ranking").replace(/[\\/:*?"<>|]/g,"_")+".png"}
+const isTouch=matchMedia("(pointer:coarse)").matches;
+/* スマホは共有シート経由にすると「画像を保存」で写真アプリに入る */
+function canShareImage(blob){
+  try{
+    if(!isTouch||!navigator.canShare||!navigator.share)return null;
+    const f=new File([blob],fileName(),{type:"image/png"});
+    return navigator.canShare({files:[f]})?f:null;
+  }catch(e){return null}
+}
+function doSave(blob,silent){
+  const f=canShareImage(blob);
+  if(f){
+    navigator.share({files:[f]}).catch(e=>{
+      if(e&&(e.name==="AbortError"||e.name==="NotAllowedError"))return;
+      fallbackSave(blob,silent);
+    });
+    return;
+  }
+  fallbackSave(blob,silent);
+}
+async function fallbackSave(blob,silent){
+  const name=fileName();
   if(!downloads){
     try{
-      const u=URL.createObjectURL(lastBlob);
-      const a=document.createElement("a");a.href=u;a.download=name+".png";
+      const u=URL.createObjectURL(blob);
+      const a=document.createElement("a");a.href=u;a.download=name;
       document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(u),4000);
       if(!silent)toast("画像を保存しました");
@@ -709,12 +732,17 @@ async function savePng(silent){
     return;
   }
   try{
-    const r=await downloads.save({filename:name+".png",data:lastBlob});
+    const r=await downloads.save({filename:name,data:blob});
     if(r.status==="saved"&&!silent)toast("保存しました");
   }catch(e){
     if(e&&e.code==="declined")return;
-    toast("保存できませんでした。画像を長押しでも保存できます");
+    toast("保存できませんでした");
   }
+}
+function savePng(silent){
+  /* 共有シートはユーザー操作の直後でないと開けないので、用意済みならすぐ呼ぶ */
+  if(lastBlob){doSave(lastBlob,silent);return}
+  (async()=>{await lastDraw;if(!lastBlob)await drawImage();if(lastBlob)doSave(lastBlob,silent)})();
 }
 $("#savePng").onclick=()=>savePng(false);
 /* Xの文字数計算：日本語などは2文字、URLは長さによらず23文字ぶん */
@@ -737,9 +765,9 @@ function shareText(){
 $("#shareX").onclick=()=>{
   const u="https://x.com/intent/post?text="+encodeURIComponent(shareText())+"&url="+encodeURIComponent(shareUrl());
   const w=window.open(u,"_blank","noopener");
-  if(!w)toast("ポップアップがブロックされました。文章をコピーしてください");
-  savePng(true);
-  if(w)toast("画像を保存したら、Xの投稿画面で添付してください");
+  if(!w){toast("ポップアップがブロックされました。文章をコピーしてください");return}
+  /* スマホは共有シートが二重に開くのを避けるため、PCのみ画像も保存しておく */
+  if(!isTouch)savePng(true);
 };
 $("#copyTxt").onclick=async()=>{
   const txt=shareText()+"\n"+shareUrl();
