@@ -129,6 +129,8 @@ input[type=text]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3p
   .card{min-height:92px;padding:22px 14px 14px;gap:5px}
   .card .mem{font-size:11px}
   .card .tag{top:9px;left:11px}
+  .side{gap:4px}
+  .skip{padding:3px 8px}
   .tie{margin-top:15px;padding:10px 24px}
   .subacts{margin-top:12px}
 }
@@ -260,7 +262,7 @@ footer a{color:var(--blue)}
   <footer>
     出演者データは
     <a href="https://shibuya-manzaigekijyo.yoshimoto.co.jp/profile/" target="_blank" rel="noopener">渋谷よしもと漫才劇場 所属芸人一覧</a>と
-    <a href="https://manzaigekijyo.yoshimoto.co.jp/profile/" target="_blank" rel="noopener">よしもと漫才劇場（大阪）所属芸人一覧</a>から。<br>
+    <a href="https://manzaigekijyo.yoshimoto.co.jp/profile/" target="_blank" rel="noopener">よしもと漫才劇場 所属芸人一覧</a>から。<br>
     非公式ファンサイトです。権利は各権利者に帰属します。<br>
     制作者：ふかせ（<a href="https://x.com/F6rPd" target="_blank" rel="noopener">@F6rPd</a>）
   </footer>
@@ -373,7 +375,7 @@ const GNAME={kiwami:"極",sho:"翔",all:"全"};
 const DEFAULT_TITLE="好きな劇場所属芸人ランキング";
 const THEATERS={
   tokyo:{label:"東京",name:"渋谷よしもと漫才劇場"},
-  osaka:{label:"大阪",name:"よしもと漫才劇場（大阪）"}
+  osaka:{label:"大阪",name:"よしもと漫才劇場"}
 };
 
 const $=s=>document.querySelector(s);
