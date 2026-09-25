@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>マンゲキランキングメーカー｜2択で作るマンゲキ芸人ランキング</title>
+<title>マンゲキ好き順メーカー｜2択で作るマンゲキ芸人ランキング</title>
 <meta name="description" content="渋谷よしもと漫才劇場とよしもと漫才劇場（大阪）の所属芸人を2択で並べかえて、自分だけのランキング画像が作れる非公式ファンサイト。">
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="./favicon.png">
@@ -11,11 +11,11 @@
 <!-- ▼ 独自ドメインに変えたときは、下の og:url / og:image / twitter:image のURLも直してください -->
 <meta property="og:url" content="https://mngksort.pages.dev/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="マンゲキランキングメーカー">
+<meta property="og:title" content="マンゲキ好き順メーカー">
 <meta property="og:description" content="自分だけのマンゲキ芸人ランキングを作成">
 <meta property="og:image" content="https://mngksort.pages.dev/ogp.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="マンゲキランキングメーカー">
+<meta name="twitter:title" content="マンゲキ好き順メーカー">
 <meta name="twitter:description" content="自分だけのマンゲキ芸人ランキングを作成">
 <meta name="twitter:image" content="https://mngksort.pages.dev/ogp.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -140,8 +140,6 @@ input[type=text]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3p
 .rank .nm{font-weight:700;color:var(--navy);font-size:16px}
 .rank li.t1 .nm{font-size:20px}
 .rank .mb{font-size:11.5px;color:var(--mute);margin-left:7px;font-weight:400}
-.rank li.unk{background:#FAFCFF}
-.rank li.unk .no,.rank li.unk .nm{color:#9BABC4}
 .fld{font-size:12px;color:var(--mute);margin:16px 0 0}
 .segs{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
 .segs button{background:var(--white);border:1.5px solid var(--line);border-radius:999px;padding:6px 15px;font-size:13px}
@@ -180,14 +178,14 @@ footer a{color:var(--blue)}
 <div class="topbar"></div>
 <div class="wrap">
 
-  <div class="masthead"><h1>マンゲキランキングメーカー</h1></div>
+  <div class="masthead"><h1>マンゲキ好き順メーカー</h1></div>
 
   <!-- SETUP -->
   <section id="setup">
     <div class="panel">
-      <h2>ランキング名</h2>
+      <h2>タイトル</h2>
       <p class="note">タイトルは後からも変更可能です。</p>
-      <input id="title" type="text" maxlength="30" placeholder="好きな劇場所属芸人ランキング" value="好きな劇場所属芸人ランキング">
+      <input id="title" type="text" maxlength="30" placeholder="マンゲキ好き順" value="マンゲキ好き順">
     </div>
 
     <div class="panel">
@@ -199,7 +197,7 @@ footer a{color:var(--blue)}
       <div class="opts three" id="groups"></div>
 
       <div class="gap"></div>
-      <h2>ソート対象</h2>
+      <h2>並び替え対象</h2>
       <div class="opts two" id="entries"></div>
 
       <div class="picker hidden" id="picker">
@@ -280,7 +278,7 @@ footer a{color:var(--blue)}
 /* ▼▼ SNS共有に付けるリンク。空のままなら、今このページを開いているURLが自動で使われます。
       固定したい場合だけ "https://example.pages.dev/" のように書いてください ▼▼ */
 const SHARE_URL="https://mngksort.pages.dev/";
-const shareUrl=()=>SHARE_URL||location.href.split("#")[0].split("?")[0];
+const shareUrl=()=>(SHARE_URL||location.href.split("#")[0].split("?")[0])+(location.hash||"");
 /* ▲▲ ここだけ書き換えればOK ▲▲ */
 
 /* ===== データ：渋谷よしもと漫才劇場 所属芸人 ===== */
@@ -375,7 +373,7 @@ addActs(TOKYO_SHO,"tokyo","sho");
 addActs(OSAKA_KIWAMI,"osaka","kiwami");
 addActs(OSAKA_SHO,"osaka","sho");
 const GNAME={kiwami:"極",sho:"翔",all:"全"};
-const DEFAULT_TITLE="好きな劇場所属芸人ランキング";
+const DEFAULT_TITLE="マンゲキ好き順";
 const THEATERS={
   tokyo:{label:"東京",name:"渋谷よしもと漫才劇場"},
   osaka:{label:"大阪",name:"よしもと漫才劇場"}
@@ -396,7 +394,7 @@ function ask(msg,yes){
 let theater="tokyo",group="kiwami",entry="all",custom=new Set();
 const cnt=(t,g)=>ACTS.filter(a=>a.t===t&&(g==="all"||a.g===g)).length;
 const THEATER_OPTS=[["tokyo","東京",cnt("tokyo","all")+"組"],["osaka","大阪",cnt("osaka","all")+"組"]];
-const ENTRIES=[["all","全組でソート",""],["custom","自分で選ぶ",""]];
+const ENTRIES=[["all","全組",""],["custom","自分で選ぶ",""]];
 function mkOpts(host,list,get,set){
   host.innerHTML="";
   list.forEach(([v,t,s])=>{
@@ -441,12 +439,12 @@ function syncAll(){
   $("#picker").classList.toggle("hidden",entry!=="custom");
   $("#pickCount").textContent=pool().filter(a=>custom.has(a.id)).length+"組を選択中";
   const n=chosen().length,e=estimate(n);
-  $("#summary").innerHTML=n<2?"2組以上えらんでください":`<b>${n}</b>組でソート　所要時間 約<b>${mins(e)}</b>分`;
+  $("#summary").innerHTML=n<2?"2組以上えらんでください":`<b>${n}</b>組を並び替え　所要時間 約<b>${mins(e)}</b>分`;
   $("#start").disabled=n<2;
 }
 
 /* ===== ソート機構 ===== */
-let S=null,history=[],done=0,manual=0,rosterIds=[],usedLabel="",usedTheater="",hiddenSet=new Set();
+let S=null,history=[],done=0,manual=0,rosterIds=[],usedLabel="",usedTheater="",usedCount=0,hiddenSet=new Set();
 const clone=o=>JSON.parse(JSON.stringify(o));
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function advance(s){
@@ -483,10 +481,11 @@ function begin(){
   const ids=chosen();
   const gl=group==="all"?"全メンバー":GNAME[group]+"メンバー";
   usedLabel=entry==="all"?`${gl}${ids.length}組`:`${gl}から${ids.length}組`;
-  usedTheater=THEATERS[theater].name;
+  usedTheater=THEATERS[theater].name;usedCount=ids.length;
   rosterIds=shuffle(ids.slice());
   S={pending:rosterIds.map(i=>[[i]]),next:[],cur:null};
   history=[];done=0;manual=0;hiddenSet=new Set();
+  clearHash();
   const t=$("#title").value.trim();
   $("#qText").textContent=t?`「${t}」ならどっち？`:"どっちが好き？";
   $("#setup").classList.add("hidden");$("#result").classList.add("hidden");
@@ -529,6 +528,7 @@ $("#skipB").onclick=e=>{drop(e);hideAct("b")};
 $("#undo").onclick=()=>{const h=history.pop();if(h){S=h.s;done=h.done;manual=h.manual;hiddenSet=new Set(h.hid);render()}};
 $("#quit").onclick=async()=>{
   if(await ask("ここまでの選択は消えます。最初からやり直しますか？","やり直す")){
+    clearHash();
     $("#battle").classList.add("hidden");$("#setup").classList.remove("hidden");window.scrollTo(0,0);
   }
 };
@@ -552,17 +552,13 @@ function rankRows(){
   RESULT.forEach(g=>{
     const keep=g.filter(id=>!hiddenSet.has(id));
     if(!keep.length)return;
-    keep.forEach(id=>rows.push({rank:r,act:ACTS[id],unknown:false}));
+    keep.forEach(id=>rows.push({rank:r,act:ACTS[id]}));
     r+=keep.length;
   });
-  /* 「分からない」で省いた組は、全員そろって最下位に */
-  const unknowns=[];
-  RESULT.forEach(g=>g.forEach(id=>{if(hiddenSet.has(id))unknowns.push(id)}));
-  unknowns.forEach(id=>rows.push({rank:r,act:ACTS[id],unknown:true}));
   return rows;
 }
 function limited(){const rows=rankRows();return depth==="all"?rows:rows.filter(r=>r.rank<=Number(depth))}
-async function showResult(res){
+async function showResult(res,savedDepth,restoring){
   RESULT=res;
   const n=rankRows().length;
   if(n<1){
@@ -572,19 +568,20 @@ async function showResult(res){
   $("#battle").classList.add("hidden");$("#result").classList.remove("hidden");
   const opts=[["5","上位5組"],["10","上位10組"],["all","全"+n+"組"]].filter(o=>o[0]==="all"||Number(o[0])<n);
   depth=n>10?"10":(n>5?"5":"all");
+  if(savedDepth&&opts.some(o=>o[0]===savedDepth))depth=savedDepth;
   const d=$("#depth");d.innerHTML="";
   opts.forEach(([v,t])=>{const b=document.createElement("button");b.type="button";b.textContent=t;
     b.setAttribute("aria-pressed",v===depth);
-    b.onclick=()=>{depth=v;[...d.children].forEach((c,i)=>c.setAttribute("aria-pressed",opts[i][0]===v));drawResult()};
+    b.onclick=()=>{depth=v;[...d.children].forEach((c,i)=>c.setAttribute("aria-pressed",opts[i][0]===v));syncHash(false);drawResult()};
     d.appendChild(b)});
+  if(!restoring)syncHash(true);
   window.scrollTo(0,0);drawResult();
 }
 function drawResult(){
   const list=$("#rankList");list.innerHTML="";
   limited().forEach(r=>{
     const li=document.createElement("li");
-    if(r.unknown)li.className="unk";
-    else if(r.rank<=3)li.className="t"+r.rank;
+    if(r.rank<=3)li.className="t"+r.rank;
     li.innerHTML='<span class="no"></span><span><span class="nm"></span><span class="mb"></span></span>';
     li.querySelector(".no").textContent=r.rank;
     li.querySelector(".nm").textContent=r.act.n;
@@ -594,7 +591,58 @@ function drawResult(){
   drawImage();
 }
 let drawTimer=null;
-$("#title2").oninput=()=>{clearTimeout(drawTimer);drawTimer=setTimeout(drawImage,400)};
+$("#title2").oninput=()=>{clearTimeout(drawTimer);drawTimer=setTimeout(()=>{syncHash(false);drawImage()},400)};
+
+/* ===== 結果をURLに保存して、再読み込みや共有で復元できるようにする ===== */
+const bare=()=>location.pathname+location.search;
+function resultHash(){
+  const p=new URLSearchParams();
+  p.set("v","1");p.set("t",theater);p.set("g",group);p.set("e",entry);
+  p.set("c",String(usedCount||rankRows().length));
+  p.set("d",depth);
+  p.set("n",$("#title2").value.trim()||DEFAULT_TITLE);
+  p.set("r",RESULT.map(g=>g.filter(id=>!hiddenSet.has(id))).filter(g=>g.length).map(g=>g.join("-")).join("."));
+  return "#"+p.toString();
+}
+function syncHash(push){
+  if(!RESULT.length)return;
+  const h=resultHash();
+  if(location.hash===h)return;
+  try{push?history.pushState(null,"",h):history.replaceState(null,"",h)}catch(e){location.hash=h}
+}
+function clearHash(){try{history.pushState(null,"",bare())}catch(e){}}
+function parseHash(){
+  try{
+    const q=new URLSearchParams(location.hash.slice(1));
+    if(q.get("v")!=="1")return null;
+    const groups=(q.get("r")||"").split(".").filter(Boolean).map(g=>g.split("-").map(Number));
+    const ids=groups.flat();
+    if(!ids.length||ids.some(i=>!Number.isInteger(i)||i<0||i>=ACTS.length))return null;
+    if(new Set(ids).size!==ids.length)return null;
+    const t=q.get("t"),g=q.get("g");
+    if(!THEATERS[t]||!["kiwami","sho","all"].includes(g))return null;
+    return {groups,t,g,e:q.get("e")==="all"?"all":"custom",
+      c:Number(q.get("c"))||ids.length,n:q.get("n")||DEFAULT_TITLE,d:q.get("d")||"all"};
+  }catch(e){return null}
+}
+function restoreFromHash(){
+  const p=parseHash();if(!p)return false;
+  theater=p.t;group=p.g;entry=p.e;hiddenSet=new Set();rosterIds=[];
+  usedTheater=THEATERS[p.t].name;
+  const gl=p.g==="all"?"全メンバー":GNAME[p.g]+"メンバー";
+  usedCount=p.c;usedLabel=p.e==="all"?`${gl}${p.c}組`:`${gl}から${p.c}組`;
+  $("#title2").value=p.n;
+  $("#setup").classList.add("hidden");$("#battle").classList.add("hidden");
+  showResult(p.groups,p.d,true);
+  return true;
+}
+addEventListener("hashchange",()=>{
+  if(!location.hash){
+    $("#result").classList.add("hidden");$("#battle").classList.add("hidden");
+    $("#setup").classList.remove("hidden");return;
+  }
+  restoreFromHash();
+});
 
 /* ===== 画像 ===== */
 const W=960;let lastBlob=null,drawSeq=0,lastDraw=Promise.resolve();
@@ -630,7 +678,7 @@ async function renderImage(){
   const my=++drawSeq;
   const rows=limited();
   const title=($("#title2").value.trim())||DEFAULT_TITLE;
-  await ensureFonts(title+rows.map(r=>r.act.n).join("")+usedLabel+usedTheater+"渋谷よしもと漫才劇場大阪位組年月日を並べかえマンゲキランキングメーカー非公式");
+  await ensureFonts(title+rows.map(r=>r.act.n).join("")+usedLabel+usedTheater+"渋谷よしもと漫才劇場大阪位組年月日を並べかえマンゲキ好き順メーカー非公式");
   const c=document.createElement("canvas"),ctx=c.getContext("2d");
   const maxW=W-120;
 
@@ -668,13 +716,13 @@ async function renderImage(){
     if(i===0){ctx.fillStyle="#EFF5FF";ctx.fillRect(0,y,W,h)}
     ctx.textAlign="center";
     ctx.font=`500 ${i===0?58:i<3?46:36}px "Oswald",sans-serif`;
-    ctx.fillStyle=r.unknown?"#C3CEDE":r.rank===1?"#1746C8":r.rank<=3?"#5B9BFF":"#93A4BE";
+    ctx.fillStyle=r.rank===1?"#1746C8":r.rank<=3?"#5B9BFF":"#93A4BE";
     ctx.fillText(String(r.rank),104,cy+2);
     ctx.textAlign="left";
     let ns=i===0?50:i<3?42:34;
     const avail=W-172-48;
     while(ns>20){ctx.font=`700 ${ns}px "Zen Kaku Gothic New",sans-serif`;if(ctx.measureText(r.act.n).width<=avail)break;ns-=2}
-    ctx.fillStyle=r.unknown?"#8E9FB8":"#0E2140";
+    ctx.fillStyle="#0E2140";
     ctx.fillText(r.act.n,172,cy);
     ctx.fillStyle="#E2EAF6";ctx.fillRect(56,y+h-3,W-112,1);
     y+=h;
@@ -684,7 +732,7 @@ async function renderImage(){
   ctx.font='500 21px "Zen Kaku Gothic New",sans-serif';
   ctx.fillStyle="#93A4BE";
   const d=new Date();
-  ctx.fillText(`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}　マンゲキランキングメーカー（非公式）`,W/2,H-footH/2-4);
+  ctx.fillText(`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}　マンゲキ好き順メーカー（非公式）`,W/2,H-footH/2-4);
   ctx.fillStyle="#1746C8";ctx.fillRect(0,H-8,W*.55,8);
   ctx.fillStyle="#5B9BFF";ctx.fillRect(W*.55,H-8,W*.45,8);
 
@@ -752,7 +800,7 @@ function xw(t){let n=0;for(const ch of t){const o=ch.codePointAt(0);
 function shareText(){
   const rows=rankRows().slice(0,10);
   const t=$("#title2").value.trim()||DEFAULT_TITLE;
-  const head=`【${t}】`,tail="\n\n#MNGKRANK",URLCOST=1+23,LIMIT=280;
+  const head=`【${t}】`,tail="\n\n#MNGKMAKER",URLCOST=1+23,LIMIT=280;
   const lines=rows.map(r=>`${r.rank}位 ${r.act.n}`);
   let n=lines.length,txt;
   while(true){
@@ -778,9 +826,9 @@ $("#copyTxt").onclick=async()=>{
     ta.remove();
   }
 };
-$("#again").onclick=()=>{$("#result").classList.add("hidden");$("#setup").classList.remove("hidden");window.scrollTo(0,0)};
+$("#again").onclick=()=>{clearHash();$("#result").classList.add("hidden");$("#setup").classList.remove("hidden");window.scrollTo(0,0)};
 
-buildPicker();syncAll();
+buildPicker();syncAll();restoreFromHash();
 </script>
 </body>
 </html>

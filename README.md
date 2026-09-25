@@ -1,4 +1,4 @@
-# マンゲキランキングメーカー
+# マンゲキ好き順メーカー
 
 渋谷よしもと漫才劇場（東京）とよしもと漫才劇場（大阪）の所属芸人を2択で並べかえて、
 自分だけのランキング画像を作る非公式ファンサイトです。
@@ -30,71 +30,59 @@
 ### ブラウザだけで済ませる場合
 
 1. GitHubにログインし、右上の「+」→ New repository
-2. Repository name に `mangeki-ranking-maker` などを入れ、Public のまま Create repository
+2. Repository name を入れて Create repository（private でも public でも公開できます）
 3. 次の画面の「uploading an existing file」をクリック
-4. このフォルダの中身（`index.html` や画像類）をまとめてドラッグ＆ドロップ
-   - フォルダごとではなく、**中のファイルを直接**入れてください。`index.html` がリポジトリの一番上に来るのが正解です
-5. 下の Commit changes を押す
+4. このフォルダの**中のファイル**をまとめてドラッグ＆ドロップ（フォルダごとではなく中身を直接）
+5. Commit changes
 
-### コマンドで済ませる場合
+`index.html` がリポジトリの一番上にあればOKです。
+
+### コマンドの場合
 
 ```bash
-cd マンゲキランキングメーカーのフォルダ
 git init
 git add .
 git commit -m "first commit"
 git branch -M main
-git remote add origin https://github.com/ユーザー名/mangeki-ranking-maker.git
+git remote add origin https://github.com/ユーザー名/リポジトリ名.git
 git push -u origin main
 ```
 
 ---
 
-## Cloudflare Pagesで公開する
+## Cloudflareで公開する
 
-1. [Cloudflareダッシュボード](https://dash.cloudflare.com/)にログイン
-2. 左メニューの **Workers & Pages** → **Create** → **Pages** タブ → **Connect to Git**
-3. GitHubアカウントを連携し、さきほどのリポジトリを選ぶ
-4. ビルド設定を次のようにする（どれも空欄・None でかまいません）
+Cloudflareの「Create an app」画面はWorkers用に変わっています。静的サイトはPagesの導線から作ります。
+
+1. Cloudflareダッシュボード → Compute → **Workers & Pages** → **Create**
+2. 画面下の小さなリンク **Continue to Pages**（Need to use the legacy Pages workflow? の横）をクリック
+3. **Import an existing Git repository** の Get started
+4. GitHubを連携してリポジトリを選択 → Begin setup
+5. 設定を次のとおりにする
 
    | 項目 | 値 |
    |---|---|
+   | Project name | 好きな名前（これがURLになります） |
    | Production branch | `main` |
    | Framework preset | None |
-   | Build command | （空欄） |
+   | Build command | 空欄 |
    | Build output directory | `/` |
 
-5. **Save and Deploy** を押す。1分ほどで `https://プロジェクト名.pages.dev` が発行されます
-6. 以降はGitHubにpushするだけで自動的に再デプロイされます
+6. **Save and Deploy**。1分ほどで `https://プロジェクト名.pages.dev` が発行されます
+
+以降はGitHubにpushするたびに自動で再デプロイされます。
 
 ### 独自ドメインを使う場合
 
-Pagesのプロジェクト → **Custom domains** → Set up a custom domain。
-Cloudflareで管理しているドメインならDNSは自動で設定されます。
+プロジェクト画面 → Custom domains → Set up a custom domain。
+Cloudflareで管理しているドメインならDNSは自動設定されます。
 
 ---
 
 ## 公開したあとに直すところ
 
-**共有リンクは自動で入ります。** `index.html` の `SHARE_URL` は空のままでよく、
-Xに投稿するときは開いているページのURLが自動で使われます。
-固定したい場合だけ次のように書いてください。
-
-```js
-const SHARE_URL="https://あなたのドメイン/";
-```
-
-**OGP画像は絶対URLに直す必要があります。** Xやその他SNSでカードを表示させるには、
-`index.html` の `<head>` にある次の3か所を公開URLに書き換えてください。
-
-```html
-<meta property="og:url" content="https://あなたのドメイン/">
-<meta property="og:image" content="https://あなたのドメイン/ogp.png">
-<meta name="twitter:image" content="https://あなたのドメイン/ogp.png">
-```
-
-書き換えたら [Card Validator](https://cards-dev.twitter.com/validator) などでキャッシュを更新すると、
-反映が早くなります。
+共有リンクとOGPは `https://mngksort.pages.dev/` 向けに設定済みです。
+独自ドメインに変える場合のみ、下の「URLの設定について」を参照してください。
 
 ---
 
@@ -122,3 +110,14 @@ const SHARE_URL="https://あなたのドメイン/";
 利用者のデータはどこにも送信・保存していません（すべてブラウザ内で完結します）。
 
 制作：ふかせ（[@F6rPd](https://x.com/F6rPd)）
+
+---
+
+## URLの設定について
+
+公開URL `https://mngksort.pages.dev/` を前提に設定済みです。書き換えは不要です。
+
+- Xの投稿文に入るリンク：`index.html` 冒頭の `const SHARE_URL="https://mngksort.pages.dev/";`
+- OGP：`<head>` の `og:url` / `og:image` / `twitter:image`
+
+独自ドメインに変えたときだけ、この4か所を新しいURLに直してください。
