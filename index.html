@@ -752,7 +752,7 @@ function xw(t){let n=0;for(const ch of t){const o=ch.codePointAt(0);
 function shareText(){
   const rows=rankRows().slice(0,10);
   const t=$("#title2").value.trim()||DEFAULT_TITLE;
-  const head=`【${t}】`,tail="\n\n#MNGKSORT",URLCOST=1+23,LIMIT=280;
+  const head=`【${t}】`,tail="\n\n#MNGKRANK",URLCOST=1+23,LIMIT=280;
   const lines=rows.map(r=>`${r.rank}位 ${r.act.n}`);
   let n=lines.length,txt;
   while(true){
